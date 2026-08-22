@@ -3235,7 +3235,7 @@ function LiteratureTracker() {
   return /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Inter',system-ui,sans-serif",
-      maxWidth: page === "reading" ? "100%" : 920,
+      maxWidth: page === "reading" ? "none" : 920,
       margin: "0 auto",
       padding: page === "reading" ? "20px 24px 40px" : "20px 16px 40px",
       color: t.text,
