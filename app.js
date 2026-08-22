@@ -1252,7 +1252,7 @@ function ReadingListTable({
     onClick: () => toggleSort("importance")
   }, "Imp", arrow("importance")), /*#__PURE__*/React.createElement("th", {
     style: thStyle
-  }, "Tags"), /*#__PURE__*/React.createElement("th", {
+  }, "Keywords"), /*#__PURE__*/React.createElement("th", {
     style: thStyle,
     onClick: () => toggleSort("title")
   }, "Title", arrow("title")), /*#__PURE__*/React.createElement("th", {
@@ -1360,7 +1360,7 @@ function ReadingListTable({
         whiteSpace: "nowrap"
       }
     }, fmtDate(p.dateAdded))), isExp && /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-      colSpan: 9,
+      colSpan: 8,
       style: {
         padding: "12px 16px 16px 40px",
         background: t.bgCardAlt,
@@ -3538,5 +3538,7 @@ function LiteratureTracker() {
     t: t
   }));
 }
+
+// Mount
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(React.createElement(LiteratureTracker));
