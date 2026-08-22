@@ -1752,15 +1752,34 @@ function VisPage({
 }) {
   const [mode, setMode] = useState("papers");
   const [hovered, setHovered] = useState(null);
+  const [filterTag, setFilterTag] = useState("all");
+  const [filterImp, setFilterImp] = useState("all");
   const W = 660;
   const H = 400;
+  const MAX_NODES = 150;
+
+  // Collect all tags
+  var allTags = {};
+  papers.forEach(function(p) { (p.fields || []).forEach(function(f) { allTags[f] = (allTags[f] || 0) + 1; }); });
+  var tagList = Object.entries(allTags).sort(function(a, b) { return b[1] - a[1]; });
+
+  // Filter papers
+  var filtered = papers.filter(function(p) {
+    if (filterTag !== "all" && !(p.fields || []).includes(filterTag)) return false;
+    if (filterImp !== "all" && p.importance !== filterImp) return false;
+    return true;
+  });
+
+  // Limit to MAX_NODES
+  var limited = filtered.slice(0, MAX_NODES);
+  var isLimited = filtered.length > MAX_NODES;
 
   // Build nodes and links
   var rawNodes = [];
   var rawLinks = [];
   if (mode === "papers") {
-    for (var pi = 0; pi < papers.length; pi++) {
-      var p = papers[pi];
+    for (var pi = 0; pi < limited.length; pi++) {
+      var p = limited[pi];
       var lbl = (p.author || "?").split(",")[0].slice(0, 15) + " " + p.year;
       var sz = p.importance === "High" ? 12 : p.importance === "Medium" ? 9 : 7;
       rawNodes.push({
@@ -1771,23 +1790,21 @@ function VisPage({
         r: sz
       });
     }
+    var nodeIds = {};
+    rawNodes.forEach(function(n) { nodeIds[n.id] = true; });
     for (var ci = 0; ci < citations.length; ci++) {
       var c = citations[ci];
-      var hasS = false,
-        hasT = false;
-      for (var ni = 0; ni < rawNodes.length; ni++) {
-        if (rawNodes[ni].id === c.sourceId) hasS = true;
-        if (rawNodes[ni].id === c.targetId) hasT = true;
-      }
-      if (hasS && hasT) rawLinks.push({
+      if (nodeIds[c.sourceId] && nodeIds[c.targetId]) rawLinks.push({
         source: c.sourceId,
         target: c.targetId
       });
     }
   } else {
+    var limitedIds = {};
+    limited.forEach(function(p) { limitedIds[p.id] = true; });
     var am = {};
-    for (var ai = 0; ai < papers.length; ai++) {
-      var auths = splitAuthors(papers[ai].author);
+    for (var ai = 0; ai < limited.length; ai++) {
+      var auths = splitAuthors(limited[ai].author);
       for (var aj = 0; aj < auths.length; aj++) {
         var au = auths[aj].trim();
         if (!au) continue;
@@ -1803,14 +1820,17 @@ function VisPage({
         am[k].r = Math.min(16, 5 + am[k].count * 3);
       }
     }
-    rawNodes = Object.values(am);
+    rawNodes = Object.values(am).slice(0, MAX_NODES);
+    var nodeSet = {};
+    rawNodes.forEach(function(n) { nodeSet[n.id] = true; });
     var ls = {};
-    for (var bi = 0; bi < papers.length; bi++) {
-      var ba = splitAuthors(papers[bi].author).map(function (s) {
+    for (var bi = 0; bi < limited.length; bi++) {
+      var ba = splitAuthors(limited[bi].author).map(function (s) {
         return normalizeAuthorKey(s);
       }).filter(Boolean);
       for (var x = 0; x < ba.length; x++) {
         for (var y = x + 1; y < ba.length; y++) {
+          if (!nodeSet[ba[x]] || !nodeSet[ba[y]]) continue;
           var lk = ba[x] < ba[y] ? ba[x] + "||" + ba[y] : ba[y] + "||" + ba[x];
           if (!ls[lk]) {
             ls[lk] = true;
@@ -1956,12 +1976,30 @@ function VisPage({
       setMode("authors");
     },
     style: btnFn(t, mode === "authors")
-  }, "Authors")), papers.length === 0 ? /*#__PURE__*/React.createElement("div", {
+  }, "Authors")), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap", alignItems: "center" }
+  }, /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: t.textTer, textTransform: "uppercase" } }, "Tag:"), /*#__PURE__*/React.createElement("select", {
+    value: filterTag,
+    onChange: function(e) { setFilterTag(e.target.value); },
+    style: { fontSize: 11, padding: "4px 8px", borderRadius: 6, border: "1px solid " + t.borderBtn, background: t.bgInput, color: t.text }
+  }, /*#__PURE__*/React.createElement("option", { value: "all" }, "All (", papers.length, ")"), tagList.map(function(e) {
+    return /*#__PURE__*/React.createElement("option", { key: e[0], value: e[0] }, e[0], " (", e[1], ")");
+  })), /*#__PURE__*/React.createElement("span", { style: { fontSize: 10, fontWeight: 700, color: t.textTer, textTransform: "uppercase", marginLeft: 8 } }, "Imp:"), ["all"].concat(IMPORTANCE_OPTS).map(function(o) {
+    return /*#__PURE__*/React.createElement("button", {
+      key: o,
+      onClick: function() { setFilterImp(o); },
+      style: { ...btnFn(t, filterImp === o), borderColor: o !== "all" && filterImp === o ? IMP_COLORS[o] : t.borderBtn, color: o !== "all" && filterImp === o ? IMP_COLORS[o] : t.textTer }
+    }, o === "all" ? "All" : o);
+  })), isLimited && /*#__PURE__*/React.createElement("div", {
+    style: { fontSize: 11, color: t.textTer, marginBottom: 8, padding: "4px 10px", background: t.undoBg, border: "1px solid " + t.undoBorder, borderRadius: 6, color: t.undoText }
+  }, "Showing ", MAX_NODES, " of ", filtered.length, " — use filters to narrow down."), papers.length === 0 ? /*#__PURE__*/React.createElement("div", {
     style: {
       color: t.textFaint,
       fontSize: 13
     }
-  }, "Add papers to see the graph.") : /*#__PURE__*/React.createElement("div", {
+  }, "Add papers to see the graph.") : rawNodes.length === 0 ? /*#__PURE__*/React.createElement("div", {
+    style: { color: t.textFaint, fontSize: 13, padding: 20, textAlign: "center" }
+  }, "No papers match filters.") : /*#__PURE__*/React.createElement("div", {
     style: {
       border: "1px solid " + t.border,
       borderRadius: 10,
