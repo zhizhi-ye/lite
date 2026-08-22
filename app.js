@@ -130,7 +130,7 @@ const useIsMobile = () => {
 
 /* ── Constants ── */
 const SHEET_ID = "1xCIw0pxlDh55byNCydL95pKAPuymGReY5yx97GrP8iU";
-const SYNC_URL = "https://script.google.com/macros/s/AKfycbxZjSNBZDEGwtU52gstxian3EZI5LiC2TdhBPZNhoHnma8uQAAnaTBsh7Eho9IZRtMtpA/exec";
+const SYNC_URL = "https://script.google.com/macros/s/AKfycbxCcFhx1xzFgwIPqSziVg9rXWEVDHCcw7Z8fK3yUT6vagtUcD5FFyl7NPFuOzGf-VUYfg/exec";
 const SHEET_LINK = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/edit";
 const STORE = {
   papers: "lit-tracker-papers-v3",
