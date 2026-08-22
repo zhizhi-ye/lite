@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="76" fill="#6366F1"/>
-  <text x="50%" y="38%" dominant-baseline="central" text-anchor="middle"
-        font-family="Georgia, serif" font-size="164" font-weight="bold" fill="white">Lt</text>
-  <rect x="102" y="287" width="308" height="20" rx="10" fill="rgba(255,255,255,0.6)"/>
-  <rect x="128" y="333" width="256" height="18" rx="9" fill="rgba(255,255,255,0.35)"/>
-  <rect x="154" y="374" width="204" height="18" rx="9" fill="rgba(255,255,255,0.2)"/>
-</svg>
