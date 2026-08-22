@@ -1235,12 +1235,14 @@ function ReadingListTable({
       borderRadius: 8,
       border: "1px solid " + t.border
     }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: { overflowX: "auto" }
   }, /*#__PURE__*/React.createElement("table", {
     style: {
       width: "100%",
       borderCollapse: "collapse",
       background: t.tableBg,
-      minWidth: 750
+      minWidth: 1000
     }
   }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", {
     style: {
@@ -1252,7 +1254,7 @@ function ReadingListTable({
     onClick: () => toggleSort("importance")
   }, "Imp", arrow("importance")), /*#__PURE__*/React.createElement("th", {
     style: thStyle
-  }, "Keywords"), /*#__PURE__*/React.createElement("th", {
+  }, "Tags"), /*#__PURE__*/React.createElement("th", {
     style: thStyle,
     onClick: () => toggleSort("title")
   }, "Title", arrow("title")), /*#__PURE__*/React.createElement("th", {
@@ -1264,6 +1266,8 @@ function ReadingListTable({
   }, "Year", arrow("year")), /*#__PURE__*/React.createElement("th", {
     style: thStyle
   }, "Type"), /*#__PURE__*/React.createElement("th", {
+    style: {...thStyle, minWidth: 180}
+  }, "Insight"), /*#__PURE__*/React.createElement("th", {
     style: thStyle,
     onClick: () => toggleSort("dateAdded")
   }, "Added", arrow("dateAdded")))), /*#__PURE__*/React.createElement("tbody", null, sorted.map(p => {
@@ -1319,8 +1323,7 @@ function ReadingListTable({
     }, f)))), /*#__PURE__*/React.createElement("td", {
       style: {
         ...tdStyle,
-        fontWeight: 600,
-        maxWidth: 280
+        fontWeight: 600
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1331,8 +1334,7 @@ function ReadingListTable({
     }, isExp ? "▾ " : "▸ ", p.title)), /*#__PURE__*/React.createElement("td", {
       style: {
         ...tdStyle,
-        color: t.textSec,
-        maxWidth: 160
+        color: t.textSec
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -1352,7 +1354,26 @@ function ReadingListTable({
         fontSize: 10,
         color: t.textTer
       }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 9,
+        padding: "2px 7px",
+        borderRadius: 4,
+        background: p.itemType === "Journal Article" ? t.methBg : p.itemType === "Conference Paper" ? t.qualBg : p.itemType === "Book Section" || p.itemType === "Book" ? t.verBg : t.awBg,
+        color: p.itemType === "Journal Article" ? t.methText : p.itemType === "Conference Paper" ? t.qualText : p.itemType === "Book Section" || p.itemType === "Book" ? t.verText : t.awText,
+        whiteSpace: "nowrap"
+      }
     }, p.itemType)), /*#__PURE__*/React.createElement("td", {
+      style: {
+        ...tdStyle,
+        fontSize: 11,
+        color: t.textSec,
+        maxWidth: 260,
+        lineHeight: 1.4
+      }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: { overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }
+    }, p.note || p.result || p.researchQuestion || "")), /*#__PURE__*/React.createElement("td", {
       style: {
         ...tdStyle,
         fontSize: 10,
@@ -1360,7 +1381,7 @@ function ReadingListTable({
         whiteSpace: "nowrap"
       }
     }, fmtDate(p.dateAdded))), isExp && /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
-      colSpan: 8,
+      colSpan: 9,
       style: {
         padding: "12px 16px 16px 40px",
         background: t.bgCardAlt,
@@ -1492,7 +1513,7 @@ function ReadingListTable({
         padding: "4px 12px"
       }
     }, "Edit")))));
-  })))), /*#__PURE__*/React.createElement("div", {
+  }))))), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 11,
       color: t.textTer,
@@ -3216,9 +3237,9 @@ function LiteratureTracker() {
   return /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Inter',system-ui,sans-serif",
-      maxWidth: 920,
+      maxWidth: page === "reading" ? "100%" : 920,
       margin: "0 auto",
-      padding: "20px 16px 40px",
+      padding: page === "reading" ? "20px 24px 40px" : "20px 16px 40px",
       color: t.text,
       background: t.bgPage,
       minHeight: "100vh"
