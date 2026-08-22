@@ -116,7 +116,7 @@ function useTheme() {
     m.addEventListener("change", h);
     return () => m.removeEventListener("change", h);
   }, []);
-  return d ? DARK : LIGHT;
+  return d ? { ...DARK, _dark: true } : { ...LIGHT, _dark: false };
 }
 const useIsMobile = () => {
   const [m, s] = useState(window.innerWidth < 640);
@@ -150,6 +150,45 @@ const IMP_COLORS = {
   Useless: "#9ca3af",
   None: "#bbb"
 };
+/* ── Tag color palette ── */
+const TAG_COLORS_LIGHT = [
+  { bg: "#fce4ec", text: "#b71c1c", border: "#f8bbd0" },
+  { bg: "#fff3e0", text: "#e65100", border: "#ffe0b2" },
+  { bg: "#f3e5f5", text: "#7b1fa2", border: "#e1bee7" },
+  { bg: "#e8eaf6", text: "#283593", border: "#c5cae9" },
+  { bg: "#e0f2f1", text: "#00695c", border: "#b2dfdb" },
+  { bg: "#fef3c7", text: "#92400e", border: "#fde68a" },
+  { bg: "#dbeafe", text: "#1e40af", border: "#bfdbfe" },
+  { bg: "#fce7f3", text: "#9d174d", border: "#fbcfe8" },
+  { bg: "#d1fae5", text: "#065f46", border: "#a7f3d0" },
+  { bg: "#e0e7ff", text: "#3730a3", border: "#c7d2fe" },
+  { bg: "#fee2e2", text: "#991b1b", border: "#fecaca" },
+  { bg: "#ecfccb", text: "#3f6212", border: "#d9f99d" },
+];
+const TAG_COLORS_DARK = [
+  { bg: "#3b1030", text: "#f9a8d4", border: "#5b1050" },
+  { bg: "#3a2010", text: "#fdba74", border: "#5a3020" },
+  { bg: "#2e1045", text: "#d8b4fe", border: "#4e2065" },
+  { bg: "#1e2050", text: "#a5b4fc", border: "#2e3070" },
+  { bg: "#0d3330", text: "#5eead4", border: "#1d4340" },
+  { bg: "#3a2e10", text: "#fcd34d", border: "#5a4e20" },
+  { bg: "#1e3a5f", text: "#7dd3fc", border: "#2e4a6f" },
+  { bg: "#3b1040", text: "#f0abfc", border: "#5b2060" },
+  { bg: "#0d3320", text: "#6ee7b7", border: "#1d4330" },
+  { bg: "#2e2850", text: "#a5b4fc", border: "#3e3860" },
+  { bg: "#3b1020", text: "#fca5a5", border: "#5b2030" },
+  { bg: "#1a3010", text: "#bef264", border: "#2a4020" },
+];
+function hashStr(s) {
+  var h = 0;
+  for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function getTagColor(tag, isDark) {
+  var palette = isDark ? TAG_COLORS_DARK : TAG_COLORS_LIGHT;
+  return palette[hashStr(tag) % palette.length];
+}
+
 function gid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
@@ -619,29 +658,29 @@ function TagInput({
     }
   }, tags.map(tag => /*#__PURE__*/React.createElement("span", {
     key: tag,
-    style: {
+    style: function(){var _c=getTagColor(tag,t._dark);return {
       display: "inline-flex",
       alignItems: "center",
       gap: 3,
       padding: "2px 8px",
       borderRadius: 4,
-      background: t.tagBg,
-      color: t.tagText,
+      background: _c.bg,
+      color: _c.text,
       fontSize: 11,
       fontWeight: 600,
-      border: "1px solid " + t.tagBorder
-    }
+      border: "1px solid " + _c.border
+    }}()
   }, tag, /*#__PURE__*/React.createElement("button", {
     onClick: () => onChange(tags.filter(x => x !== tag)),
-    style: {
+    style: function(){var _c=getTagColor(tag,t._dark);return {
       background: "none",
       border: "none",
-      color: t.tagText,
+      color: _c.text,
       cursor: "pointer",
       padding: 0,
       fontSize: 13,
       lineHeight: 1
-    }
+    }}()
   }, "\u00d7"))), /*#__PURE__*/React.createElement("input", {
     value: inp,
     onChange: e => {
@@ -869,15 +908,15 @@ function PaperCard({
     }
   }, (p.fields || []).map(f => /*#__PURE__*/React.createElement("span", {
     key: f,
-    style: {
+    style: function(){var _c=getTagColor(f,t._dark);return {
       fontSize: 10,
       padding: "1px 7px",
       borderRadius: 3,
-      background: t.tagBg,
-      color: t.tagText,
-      border: "1px solid " + t.tagBorder,
+      background: _c.bg,
+      color: _c.text,
+      border: "1px solid " + _c.border,
       fontWeight: 500
-    }
+    }}()
   }, f)), p.methodWise !== "None" && p.methodWise && /*#__PURE__*/React.createElement("span", {
     style: pillFn(t.methBg, t.methText)
   }, "Method: ", p.methodWise), p.qualQuant !== "None" && p.qualQuant && /*#__PURE__*/React.createElement("span", {
@@ -1314,13 +1353,13 @@ function ReadingListTable({
       }
     }, (p.fields || []).map(f => /*#__PURE__*/React.createElement("span", {
       key: f,
-      style: {
+      style: function(){var _c=getTagColor(f,t._dark);return {
         fontSize: 9,
         padding: "1px 5px",
         borderRadius: 3,
-        background: t.tagBg,
-        color: t.tagText
-      }
+        background: _c.bg,
+        color: _c.text
+      }}()
     }, f)))), /*#__PURE__*/React.createElement("td", {
       style: {
         ...tdStyle,
@@ -1680,19 +1719,19 @@ function KeywordsPage({
   }, kwList.map(([kw, paps]) => /*#__PURE__*/React.createElement("button", {
     key: kw,
     onClick: () => setSelectedKw(kw),
-    style: {
+    style: function(){var _c=getTagColor(kw,t._dark);return {
       padding: "8px 14px",
       borderRadius: 8,
-      border: "1px solid " + t.tagBorder,
-      background: t.tagBg,
-      color: t.tagText,
+      border: "1px solid " + _c.border,
+      background: _c.bg,
+      color: _c.text,
       cursor: "pointer",
       fontSize: 13,
       fontWeight: 600,
       display: "flex",
       alignItems: "center",
       gap: 6
-    }
+    }}()
   }, kw, " ", /*#__PURE__*/React.createElement("span", {
     style: {
       background: t.accent,
@@ -3230,14 +3269,15 @@ function LiteratureTracker() {
     fontWeight: active ? 700 : 500,
     fontSize: 13,
     cursor: "pointer",
-    transition: "all 0.15s"
+    transition: "color 0.15s, background 0.15s",
+    whiteSpace: "nowrap"
   });
   return /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: "'Inter',system-ui,sans-serif",
-      maxWidth: page === "reading" ? "none" : 920,
+      maxWidth: "none",
       margin: "0 auto",
-      padding: page === "reading" ? "20px 24px 40px" : "20px 16px 40px",
+      padding: "20px 24px 40px",
       color: t.text,
       background: t.bgPage,
       minHeight: "100vh"
