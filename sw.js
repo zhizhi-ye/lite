@@ -1,5 +1,5 @@
 const CACHE = 'lit-tracker-v1';
-const ASSETS = ['./', 'index.html', 'app.js', 'manifest.json', 'icons/icon-192.svg', 'icons/icon-512.svg'];
+const ASSETS = ['./', 'index.html', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
